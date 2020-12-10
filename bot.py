@@ -14,6 +14,7 @@ Basic Echobot example, repeats messages.
 Press Ctrl-C on the command line or send a signal to the process to stop the
 bot.
 """
+import requests
 
 import logging
 
@@ -40,6 +41,16 @@ def help_command(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Help!')
 
 
+def stats_command(update: Update, context: CallbackContext) -> None:
+    """Send a message when the command /stats is issued."""
+    r = requests.get('https://beaconcha.in/api/v1/validator/30670')
+    if r.status_code == 200:
+        result = r.json()
+    else:
+        result = "Error"
+    update.message.reply_text(result)
+
+
 def echo(update: Update, context: CallbackContext) -> None:
     """Echo the user message."""
     update.message.reply_text(update.message.text)
@@ -58,6 +69,7 @@ def main():
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
+    dispatcher.add_handler(CommandHandler("stats", stats_command))
 
     # on noncommand i.e message - echo the message on Telegram
     dispatcher.add_handler(MessageHandler(
