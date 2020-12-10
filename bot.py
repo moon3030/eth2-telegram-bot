@@ -62,7 +62,7 @@ def main():
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
     print("anything?")
-    updater = Updater(os.environ["TOKEN"], use_context=True)
+    updater = Updater(os.environ.get["TOKEN"], use_context=True)
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
