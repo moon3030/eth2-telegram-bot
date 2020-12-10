@@ -46,7 +46,9 @@ def stats_command(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /stats is issued."""
     r = requests.get('https://beaconcha.in/api/v1/validator/30670')
     if r.status_code == 200:
-        result = r.json()
+        data = r.json()['data']
+        result = "Status: "+data['status']+"\n" + "Balance: " + str(data['balance']/(
+            10**9)) + '\n' + "Effective Balance: " + str(data['effectivebalance']/(10**9)) + '\n' + "Slashed: " + str(data['slashed'])
     else:
         result = "Error"
     update.message.reply_text(result)
@@ -62,8 +64,7 @@ def main():
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
-    print("anything?")
-    updater = Updater(os.environ.get["TOKEN"], use_context=True)
+    updater = Updater(os.environ.get('TOKEN'), use_context=True)
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
@@ -87,5 +88,4 @@ def main():
 
 
 if __name__ == '__main__':
-    print("wtf")
     main()
