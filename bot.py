@@ -61,6 +61,7 @@ def main():
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
+    print("anything?")
     updater = Updater(ENV["TOKEN"], use_context=True)
 
     # Get the dispatcher to register handlers
@@ -85,4 +86,5 @@ def main():
 
 
 if __name__ == '__main__':
+    print("wtf")
     main()
