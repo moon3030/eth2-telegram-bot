@@ -33,6 +33,7 @@ TOKEN = os.environ.get('TOKEN')
 CMC = os.environ.get('COINMARKETCAP')
 PORT = int(os.environ.get('PORT', '8443'))
 START_DATE = date(2020, 12, 13)
+ENTRY_PRICE = 550
 
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
@@ -50,21 +51,19 @@ def help_command(update: Update, context: CallbackContext) -> None:
 
 def stats_command(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /stats is issued."""
-    # to get eth price from coinmarketcap
-    # r = requests.get('https://beaconcha.in/api/v1/validator/30670')
+    to get eth price from coinmarketcap
+    headers = headers = {
+        'Accepts': 'application/json',
+        'X-CMC_PRO_API_KEY': CMC,
+    }
+    r = requests.get(
+        'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest', headers=headers, payload={symbol: "ETH", convert: "USD"})
 
-    # if r.status_code == 200:
-    #     data = r.json()['data']
-    #     timedelta = date.today() - START_DATE
-    #     days = timedelta.days
-    #     gains = (data['balance']-data['effectivebalance'])/(10**9)
-    #     apr = gains/days*365/32*100
-    #     appreciate =
-    #     effective_apr = apr*appreciate
-    #     result = "Validator: "+str(data['validatorindex'])+"\n"+"Status: "+data['status']+"\n" + "Current Gains: " + str(round(gains,2)) + "ETH" + '\n' + "Effective Balance: " + str(
-    #         data['effectivebalance']/(10**9)) + '\n'+"Validating APR: " + str(round(apr,1))+"%" + '\n' + "Price Appreciation: " + str(appreciate) + "Effective APR: "+ str(effective_apr)+"\n"+"Slashed: " + str(data['slashed'])
-    # else:
-    #     result = "Error"
+    if r.status_code == 200:
+        data = r.json()['data']
+        eth_price = data['ETH']['quote']['USD']['price']
+    else:
+        result = "Error"
     r = requests.get('https://beaconcha.in/api/v1/validator/30670')
 
     if r.status_code == 200:
@@ -72,13 +71,13 @@ def stats_command(update: Update, context: CallbackContext) -> None:
         timedelta = date.today() - START_DATE
         days = timedelta.days
         gains = (data['balance']-data['effectivebalance'])/(10**9)
-        apr = gains/days*365/32*100
-        # appreciate =
-        # effective_apr = apr*appreciate
-        # result = "Validator: "+str(data['validatorindex'])+"\n"+"Status: "+data['status']+"\n" + "Current Gains: " + str(round(gains, 2)) + "ETH" + '\n' + "Effective Balance: " + str(
-        #     data['effectivebalance']/(10**9)) + '\n'+"Validating APR: " + str(round(apr, 1))+"%" + '\n' + "Price Appreciation: " + str(appreciate) + "Effective APR: " + str(effective_apr)+"\n"+"Slashed: " + str(data['slashed'])
+        apr = gains/days*365/32
+        appreciate = (eth_price-ENTRY_PRICE)/ENTRY_PRICE
+        effective_apr = (1+apr)*(1+appreciate)
         result = "Validator: "+str(data['validatorindex'])+"\n"+"Status: "+data['status']+"\n" + "Current Gains: " + str(round(gains, 2)) + "ETH" + '\n' + "Effective Balance: " + str(
-            data['effectivebalance']/(10**9)) + '\n'+"Validating APR: " + str(round(apr, 1))+"%" + '\n'+"Slashed: " + str(data['slashed'])
+            data['effectivebalance']/(10**9)) + '\n'+"Validating APR: " + str(round(apr*100, 1))+"%" + '\n' + "Price Appreciation: " + str(round(appreciate*100, 1))+"%"+'\n' + "Effective APR: " + str(round(effective_apr-1, 1))+"\n"+"Slashed: " + str(data['slashed'])
+        # result = "Validator: "+str(data['validatorindex'])+"\n"+"Status: "+data['status']+"\n" + "Current Gains: " + str(round(gains, 3)) + " ETH" + '\n' + "Effective Balance: " + str(
+        #     data['effectivebalance']/(10**9)) + '\n'+"Validating APR: " + str(round(apr*100, 1))+"%" + '\n'+"Slashed: " + str(data['slashed'])
     else:
         result = "Error"
     update.message.reply_text(result)
