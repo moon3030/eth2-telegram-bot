@@ -57,8 +57,8 @@ def stats_command(update: Update, context: CallbackContext) -> None:
         days = timedelta.days
         gains = (data['balance']-data['effectivebalance'])/(10**9)
         apr = round(gains/days*365/32*100, 1)
-        result = "Status: "+data['status']+"\n" + "Current Gains: " + str(gains) + '\n' + "Effective Balance: " + str(
-            data['effectivebalance']/(10**9)) + "Efective APR: " + str(apr)+"%" + '\n' + "Slashed: " + str(data['slashed'])
+        result = "Validator: "+str(data['validatorindex'])+"\n"+"Status: "+data['status']+"\n" + "Current Gains: " + str(gains) + '\n' + "Effective Balance: " + str(
+            data['effectivebalance']/(10**9)) + '\n'+"Effective APR: " + str(apr)+"%" + '\n' + "Slashed: " + str(data['slashed'])
     else:
         result = "Error"
     update.message.reply_text(result)
@@ -67,6 +67,11 @@ def stats_command(update: Update, context: CallbackContext) -> None:
 def echo(update: Update, context: CallbackContext) -> None:
     """Echo the user message."""
     update.message.reply_text(update.message.text)
+
+
+def error(update, context):
+    """Log Errors caused by Updates."""
+    logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 
 def main():
@@ -88,7 +93,9 @@ def main():
     dispatcher.add_handler(MessageHandler(
         Filters.text & ~Filters.command, echo))
 
-    # Start the Bot
+    # add error_handlers
+    dispatcher.add_error_handler(error)
+
     # Start the Bot
     updater.start_webhook(listen="0.0.0.0",
                           port=int(PORT),
