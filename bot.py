@@ -65,7 +65,7 @@ def stats_command(update: Update, context: CallbackContext) -> None:
     #         data['effectivebalance']/(10**9)) + '\n'+"Validating APR: " + str(round(apr,1))+"%" + '\n' + "Price Appreciation: " + str(appreciate) + "Effective APR: "+ str(effective_apr)+"\n"+"Slashed: " + str(data['slashed'])
     # else:
     #     result = "Error"
-    # r = requests.get('https://beaconcha.in/api/v1/validator/30670')
+    r = requests.get('https://beaconcha.in/api/v1/validator/30670')
 
     if r.status_code == 200:
         data = r.json()['data']
