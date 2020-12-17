@@ -79,10 +79,10 @@ def stats_command(update: Update, context: CallbackContext) -> None:
         data = r.json()["data"]
         timedelta = date.today() - START_DATE
         days = timedelta.days
-                appreciate = (eth_price - ENTRY_PRICE) / ENTRY_PRICE
+        appreciate = (eth_price - ENTRY_PRICE) / ENTRY_PRICE
         gains = (data["balance"] - data["effectivebalance"]) / (10 ** 9)
         cr = gains / 32
-    effective_cr = (1+cr)*(1+appreciate)
+        effective_cr = (1 + cr) * (1 + appreciate)
         apr = gains / days * 365 / 32
         effective_apr = (1 + apr) * (1 + appreciate)
 
@@ -97,7 +97,7 @@ def stats_command(update: Update, context: CallbackContext) -> None:
             + str(data["slashed"])
             + "\n\n"
             + "Total ETH Balance: "
-            + str(round(data["balance"] / (10 ** 9)),3)
+            + str(round(data["balance"] / (10 ** 9)), 3)
             + "\n"
             + "ETH Earned: "
             + str(round(gains, 3))
