@@ -74,8 +74,18 @@ def stats_command(update: Update, context: CallbackContext) -> None:
         apr = gains/days*365/32
         appreciate = (eth_price-ENTRY_PRICE)/ENTRY_PRICE
         effective_apr = (1+apr)*(1+appreciate)
-        result = "Validator: "+str(data['validatorindex'])+"\n"+"Status: "+data['status']+"\n" + "Current Gains: " + str(round(gains, 2)) + "ETH" + '\n' + "Effective Balance: " + str(
-            data['effectivebalance']/(10**9)) + '\n'+"Validating APR: " + str(round(apr*100, 1))+"%" + '\n' + "Price Appreciation: " + str(round(appreciate*100, 1))+"%"+'\n' + "Effective APR: " + str(round(effective_apr-1, 1))+"\n"+"Slashed: " + str(data['slashed'])
+        
+        result = "Validator: "+str(data['validatorindex'])+"\n"+
+        "Status: "+data['status']+"\n" +
+        "Slashed: " + str(data['slashed']) + "\n" +
+        + "\n"+
+        "Total ETH Balance: " + str(data['balance']/(10**9)) + '\n'+
+        "ETH Earned: " + str(round(gains, 2)) + "ETH" + '\n' + 
+        "Validating APR: " + str(round(apr*100, 1))+"%" + '\n' +
+        "Price Appreciation: " + str(round(appreciate*100, 1))+"%"+'\n' +
+        + "\n"+
+        "Effective APR: " + str(round((effective_apr-1)*100, 1))+"%"
+        
         # result = "Validator: "+str(data['validatorindex'])+"\n"+"Status: "+data['status']+"\n" + "Current Gains: " + str(round(gains, 3)) + " ETH" + '\n' + "Effective Balance: " + str(
         #     data['effectivebalance']/(10**9)) + '\n'+"Validating APR: " + str(round(apr*100, 1))+"%" + '\n'+"Slashed: " + str(data['slashed'])
     else:
