@@ -79,9 +79,11 @@ def stats_command(update: Update, context: CallbackContext) -> None:
         data = r.json()["data"]
         timedelta = date.today() - START_DATE
         days = timedelta.days
+                appreciate = (eth_price - ENTRY_PRICE) / ENTRY_PRICE
         gains = (data["balance"] - data["effectivebalance"]) / (10 ** 9)
+        cr = gains / 32
+    effective_cr = (1+cr)*(1+appreciate)
         apr = gains / days * 365 / 32
-        appreciate = (eth_price - ENTRY_PRICE) / ENTRY_PRICE
         effective_apr = (1 + apr) * (1 + appreciate)
 
         result = (
@@ -95,22 +97,30 @@ def stats_command(update: Update, context: CallbackContext) -> None:
             + str(data["slashed"])
             + "\n\n"
             + "Total ETH Balance: "
-            + str(data["balance"] / (10 ** 9))
+            + str(round(data["balance"] / (10 ** 9)),3)
             + "\n"
             + "ETH Earned: "
-            + str(round(gains, 2))
+            + str(round(gains, 3))
             + "ETH"
             + "\n"
-            + "Validating APR: "
-            + str(round(apr * 100, 1))
-            + "%"
-            + "\n"
-            + "Price Appreciation: "
-            + str(round(appreciate * 100, 1))
+            + "Current Price Appreciation: "
+            + str(round(appreciate * 100, 2))
             + "%"
             + "\n\n"
+            + "Validating Current Returns: "
+            + str(round(cr * 100, 2))
+            + "%"
+            + "\n"
+            + "Effective Current Returns: "
+            + str(round((effective_cr - 1) * 100, 2))
+            + "%"
+            + "\n\n"
+            + "Validating Annualized Return: "
+            + str(round(apr * 100, 2))
+            + "%"
+            + "\n"
             + "Effective APR: "
-            + str(round((effective_apr - 1) * 100, 1))
+            + str(round((effective_apr - 1) * 100, 2))
             + "%"
         )
 
