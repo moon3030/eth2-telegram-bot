@@ -97,7 +97,7 @@ def stats_command(update: Update, context: CallbackContext) -> None:
             + str(data["slashed"])
             + "\n\n"
             + "Total ETH Balance: "
-            + str(round(data["balance"] / (10 ** 9)), 3)
+            + str(round(data["balance"] / (10 ** 9), 3))
             + "\n"
             + "ETH Earned: "
             + str(round(gains, 3))
