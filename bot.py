@@ -58,7 +58,7 @@ def stats_command(update: Update, context: CallbackContext) -> None:
         gains = (data['balance']-data['effectivebalance'])/(10**9)
         apr = round(gains/days*365/32*100, 1)
         result = "Status: "+data['status']+"\n" + "Current Gains: " + str(gains) + '\n' + "Effective Balance: " + str(
-            data['effectivebalance']/(10**9)) + "Efective APR: " + apr+"%" + '\n' + "Slashed: " + str(data['slashed'])
+            data['effectivebalance']/(10**9)) + "Efective APR: " + str(apr)+"%" + '\n' + "Slashed: " + str(data['slashed'])
     else:
         result = "Error"
     update.message.reply_text(result)
