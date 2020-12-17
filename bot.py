@@ -16,6 +16,7 @@ bot.
 """
 import requests
 import os
+from datetime import date
 
 import logging
 
@@ -28,10 +29,14 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
-
+TOKEN = os.environ.get('TOKEN')
+PORT = int(os.environ.get('PORT', '8443'))
+START_DATE = date(2020, 12, 13)
 
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
+
+
 def start(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /start is issued."""
     update.message.reply_text('Hi!')
@@ -45,10 +50,15 @@ def help_command(update: Update, context: CallbackContext) -> None:
 def stats_command(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /stats is issued."""
     r = requests.get('https://beaconcha.in/api/v1/validator/30670')
+
     if r.status_code == 200:
         data = r.json()['data']
-        result = "Status: "+data['status']+"\n" + "Balance: " + str(data['balance']/(
-            10**9)) + '\n' + "Effective Balance: " + str(data['effectivebalance']/(10**9)) + '\n' + "Slashed: " + str(data['slashed'])
+        timedelta = date.today() - START_DATE
+        days = timedelta.days
+        gains = (data['balance']-data['effectivebalance'])/(10**9)
+        apr = round(gains/days*365/32*100, 1)
+        result = "Status: "+data['status']+"\n" + "Current Gains: " + str(gains) + '\n' + "Effective Balance: " + str(
+            data['effectivebalance']/(10**9)) + "Efective APR: " + apr+"%" + '\n' + "Slashed: " + str(data['slashed'])
     else:
         result = "Error"
     update.message.reply_text(result)
@@ -64,7 +74,7 @@ def main():
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
-    updater = Updater(os.environ.get('TOKEN'), use_context=True)
+    updater = Updater(TOKEN, use_context=True)
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
@@ -79,7 +89,12 @@ def main():
         Filters.text & ~Filters.command, echo))
 
     # Start the Bot
-    updater.start_polling()
+    # Start the Bot
+    updater.start_webhook(listen="0.0.0.0",
+                          port=int(PORT),
+                          url_path=TOKEN)
+    updater.bot.setWebhook(
+        'https://eth2-validator-status.herokuapp.com/' + TOKEN)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
@@ -88,4 +103,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        exit()
