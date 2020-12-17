@@ -21,17 +21,23 @@ from datetime import date
 import logging
 
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from telegram.ext import (
+    Updater,
+    CommandHandler,
+    MessageHandler,
+    Filters,
+    CallbackContext,
+)
 
 # Enable logging
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
 )
 
 logger = logging.getLogger(__name__)
-TOKEN = os.environ.get('TOKEN')
-CMC = os.environ.get('COINMARKETCAP')
-PORT = int(os.environ.get('PORT', '8443'))
+TOKEN = os.environ.get("TOKEN")
+CMC = os.environ.get("COINMARKETCAP")
+PORT = int(os.environ.get("PORT", "8443"))
 START_DATE = date(2020, 12, 13)
 ENTRY_PRICE = 550
 
@@ -41,53 +47,73 @@ ENTRY_PRICE = 550
 
 def start(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /start is issued."""
-    update.message.reply_text('Hi!')
+    update.message.reply_text("Hi!")
 
 
 def help_command(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    update.message.reply_text("Help!")
 
 
 def stats_command(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /stats is issued."""
     # to get eth price from coinmarketcap
     headers = headers = {
-        'Accepts': 'application/json',
-        'X-CMC_PRO_API_KEY': CMC,
+        "Accepts": "application/json",
+        "X-CMC_PRO_API_KEY": CMC,
     }
     r = requests.get(
-        'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest', headers=headers, params={'symbol': "ETH", 'convert': "USD"})
+        "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest",
+        headers=headers,
+        params={"symbol": "ETH", "convert": "USD"},
+    )
 
     if r.status_code == 200:
-        data = r.json()['data']
-        eth_price = data['ETH']['quote']['USD']['price']
+        data = r.json()["data"]
+        eth_price = data["ETH"]["quote"]["USD"]["price"]
     else:
         result = "Error"
-    r = requests.get('https://beaconcha.in/api/v1/validator/30670')
+    r = requests.get("https://beaconcha.in/api/v1/validator/30670")
 
     if r.status_code == 200:
-        data = r.json()['data']
+        data = r.json()["data"]
         timedelta = date.today() - START_DATE
         days = timedelta.days
-        gains = (data['balance']-data['effectivebalance'])/(10**9)
-        apr = gains/days*365/32
-        appreciate = (eth_price-ENTRY_PRICE)/ENTRY_PRICE
-        effective_apr = (1+apr)*(1+appreciate)
-        
-        result = "Validator: "+str(data['validatorindex'])+"\n"+
-        "Status: "+data['status']+"\n" +
-        "Slashed: " + str(data['slashed']) + "\n" +
-        + "\n"+
-        "Total ETH Balance: " + str(data['balance']/(10**9)) + '\n'+
-        "ETH Earned: " + str(round(gains, 2)) + "ETH" + '\n' + 
-        "Validating APR: " + str(round(apr*100, 1))+"%" + '\n' +
-        "Price Appreciation: " + str(round(appreciate*100, 1))+"%"+'\n' +
-        + "\n"+
-        "Effective APR: " + str(round((effective_apr-1)*100, 1))+"%"
-        
-        # result = "Validator: "+str(data['validatorindex'])+"\n"+"Status: "+data['status']+"\n" + "Current Gains: " + str(round(gains, 3)) + " ETH" + '\n' + "Effective Balance: " + str(
-        #     data['effectivebalance']/(10**9)) + '\n'+"Validating APR: " + str(round(apr*100, 1))+"%" + '\n'+"Slashed: " + str(data['slashed'])
+        gains = (data["balance"] - data["effectivebalance"]) / (10 ** 9)
+        apr = gains / days * 365 / 32
+        appreciate = (eth_price - ENTRY_PRICE) / ENTRY_PRICE
+        effective_apr = (1 + apr) * (1 + appreciate)
+
+        result = (
+            "Validator: "
+            + str(data["validatorindex"])
+            + "\n"
+            + "Status: "
+            + data["status"]
+            + "\n"
+            + "Slashed: "
+            + str(data["slashed"])
+            + "\n\n"
+            + "Total ETH Balance: "
+            + str(data["balance"] / (10 ** 9))
+            + "\n"
+            + "ETH Earned: "
+            + str(round(gains, 2))
+            + "ETH"
+            + "\n"
+            + "Validating APR: "
+            + str(round(apr * 100, 1))
+            + "%"
+            + "\n"
+            + "Price Appreciation: "
+            + str(round(appreciate * 100, 1))
+            + "%"
+            + "\n\n"
+            + "Effective APR: "
+            + str(round((effective_apr - 1) * 100, 1))
+            + "%"
+        )
+
     else:
         result = "Error"
     update.message.reply_text(result)
@@ -119,18 +145,14 @@ def main():
     dispatcher.add_handler(CommandHandler("stats", stats_command))
 
     # on noncommand i.e message - echo the message on Telegram
-    dispatcher.add_handler(MessageHandler(
-        Filters.text & ~Filters.command, echo))
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
 
     # add error_handlers
     dispatcher.add_error_handler(error)
 
     # Start the Bot
-    updater.start_webhook(listen="0.0.0.0",
-                          port=int(PORT),
-                          url_path=TOKEN)
-    updater.bot.setWebhook(
-        'https://eth2-validator-status.herokuapp.com/' + TOKEN)
+    updater.start_webhook(listen="0.0.0.0", port=int(PORT), url_path=TOKEN)
+    updater.bot.setWebhook("https://eth2-validator-status.herokuapp.com/" + TOKEN)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
@@ -138,7 +160,7 @@ def main():
     updater.idle()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
