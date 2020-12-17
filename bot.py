@@ -17,6 +17,7 @@ bot.
 import requests
 import os
 from datetime import date
+import emoji
 
 import logging
 
@@ -86,40 +87,50 @@ def stats_command(update: Update, context: CallbackContext) -> None:
         apr = gains / days * 365 / 32
         effective_apr = (1 + apr) * (1 + appreciate)
 
+        status = data["status"]
+        if status == "active_online":
+            status_emoji = ':white_check_mark:'
+        else:
+            status_emoji = ':x:'
+
+        slashed = data["slashed"]
+        slashed_emoji = ':white_check_mark:' ? slashed : ':x:'
+
         result = (
             "Validator: "
             + str(data["validatorindex"])
             + "\n"
             + "Status: "
-            + data["status"]
+            + status + emoji.emojize(status_emoji)
             + "\n"
             + "Slashed: "
-            + str(data["slashed"])
+            + str(slashed) + emoji.emojize(slashed_emoji)
             + "\n\n"
-            + "Total ETH Balance: "
+            + "Total Balance: "
             + str(round(data["balance"] / (10 ** 9), 3))
+            + "ETH"
             + "\n"
-            + "ETH Earned: "
+            + "Amount Earned: "
             + str(round(gains, 3))
             + "ETH"
             + "\n"
-            + "Current Price Appreciation: "
+            + "Price Change since Entry: "
             + str(round(appreciate * 100, 2))
             + "%"
             + "\n\n"
-            + "Validating Current Returns: "
+            + "Current Return: "
             + str(round(cr * 100, 2))
             + "%"
             + "\n"
-            + "Effective Current Returns: "
+            + "Effective Current Return: "
             + str(round((effective_cr - 1) * 100, 2))
             + "%"
             + "\n\n"
-            + "Validating Annualized Return: "
+            + "Annualized Return: "
             + str(round(apr * 100, 2))
             + "%"
             + "\n"
-            + "Effective APR: "
+            + "Effective Annualized Return: "
             + str(round((effective_apr - 1) * 100, 2))
             + "%"
         )
