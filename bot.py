@@ -57,7 +57,7 @@ def stats_command(update: Update, context: CallbackContext) -> None:
         'X-CMC_PRO_API_KEY': CMC,
     }
     r = requests.get(
-        'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest', headers=headers, payload={symbol: "ETH", convert: "USD"})
+        'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest', headers=headers, payload={'symbol': "ETH", 'convert': "USD"})
 
     if r.status_code == 200:
         data = r.json()['data']
