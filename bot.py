@@ -17,7 +17,7 @@ bot.
 import requests
 import os
 from datetime import date
-import emoji
+from emoji import emojize
 
 import logging
 
@@ -98,12 +98,12 @@ def stats_command(update: Update, context: CallbackContext) -> None:
             + str(data["validatorindex"])
             + "\n"
             + "Status: "
-            + status
-            + emoji.emojize(status_emoji)
+            + str(status)
+            + emojize(status_emoji, use_alises=True)
             + "\n"
             + "Slashed: "
             + str(slashed)
-            + emoji.emojize(slashed_emoji)
+            + emojize(slashed_emoji, use_alises=True)
             + "\n\n"
             + "Total Balance: "
             + str(round(data["balance"] / (10 ** 9), 3))
