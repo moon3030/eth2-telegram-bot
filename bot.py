@@ -30,6 +30,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 TOKEN = os.environ.get('TOKEN')
+CMC = os.environ.get('COINMARKETCAP')
 PORT = int(os.environ.get('PORT', '8443'))
 START_DATE = date(2020, 12, 13)
 
@@ -49,16 +50,35 @@ def help_command(update: Update, context: CallbackContext) -> None:
 
 def stats_command(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /stats is issued."""
-    r = requests.get('https://beaconcha.in/api/v1/validator/30670')
+    # to get eth price from coinmarketcap
+    # r = requests.get('https://beaconcha.in/api/v1/validator/30670')
+
+    # if r.status_code == 200:
+    #     data = r.json()['data']
+    #     timedelta = date.today() - START_DATE
+    #     days = timedelta.days
+    #     gains = (data['balance']-data['effectivebalance'])/(10**9)
+    #     apr = gains/days*365/32*100
+    #     appreciate =
+    #     effective_apr = apr*appreciate
+    #     result = "Validator: "+str(data['validatorindex'])+"\n"+"Status: "+data['status']+"\n" + "Current Gains: " + str(round(gains,2)) + "ETH" + '\n' + "Effective Balance: " + str(
+    #         data['effectivebalance']/(10**9)) + '\n'+"Validating APR: " + str(round(apr,1))+"%" + '\n' + "Price Appreciation: " + str(appreciate) + "Effective APR: "+ str(effective_apr)+"\n"+"Slashed: " + str(data['slashed'])
+    # else:
+    #     result = "Error"
+    # r = requests.get('https://beaconcha.in/api/v1/validator/30670')
 
     if r.status_code == 200:
         data = r.json()['data']
         timedelta = date.today() - START_DATE
         days = timedelta.days
         gains = (data['balance']-data['effectivebalance'])/(10**9)
-        apr = round(gains/days*365/32*100, 1)
-        result = "Validator: "+str(data['validatorindex'])+"\n"+"Status: "+data['status']+"\n" + "Current Gains: " + str(gains) + '\n' + "Effective Balance: " + str(
-            data['effectivebalance']/(10**9)) + '\n'+"Effective APR: " + str(apr)+"%" + '\n' + "Slashed: " + str(data['slashed'])
+        apr = gains/days*365/32*100
+        # appreciate =
+        # effective_apr = apr*appreciate
+        # result = "Validator: "+str(data['validatorindex'])+"\n"+"Status: "+data['status']+"\n" + "Current Gains: " + str(round(gains, 2)) + "ETH" + '\n' + "Effective Balance: " + str(
+        #     data['effectivebalance']/(10**9)) + '\n'+"Validating APR: " + str(round(apr, 1))+"%" + '\n' + "Price Appreciation: " + str(appreciate) + "Effective APR: " + str(effective_apr)+"\n"+"Slashed: " + str(data['slashed'])
+        result = "Validator: "+str(data['validatorindex'])+"\n"+"Status: "+data['status']+"\n" + "Current Gains: " + str(round(gains, 2)) + "ETH" + '\n' + "Effective Balance: " + str(
+            data['effectivebalance']/(10**9)) + '\n'+"Validating APR: " + str(round(apr, 1))+"%" + '\n'+"Slashed: " + str(data['slashed'])
     else:
         result = "Error"
     update.message.reply_text(result)
