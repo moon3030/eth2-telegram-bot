@@ -51,7 +51,7 @@ def help_command(update: Update, context: CallbackContext) -> None:
 
 def stats_command(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /stats is issued."""
-    to get eth price from coinmarketcap
+    # to get eth price from coinmarketcap
     headers = headers = {
         'Accepts': 'application/json',
         'X-CMC_PRO_API_KEY': CMC,
