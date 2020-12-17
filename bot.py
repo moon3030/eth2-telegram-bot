@@ -99,11 +99,11 @@ def stats_command(update: Update, context: CallbackContext) -> None:
             + "\n"
             + "Status: "
             + str(status)
-            + emojize(status_emoji, use_alises=True)
+            + emojize(status_emoji, use_aliases=True)
             + "\n"
             + "Slashed: "
             + str(slashed)
-            + emojize(slashed_emoji, use_alises=True)
+            + emojize(slashed_emoji, use_aliases=True)
             + "\n\n"
             + "Total Balance: "
             + str(round(data["balance"] / (10 ** 9), 3))
