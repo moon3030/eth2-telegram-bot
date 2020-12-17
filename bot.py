@@ -88,23 +88,22 @@ def stats_command(update: Update, context: CallbackContext) -> None:
         effective_apr = (1 + apr) * (1 + appreciate)
 
         status = data["status"]
-        if status == "active_online":
-            status_emoji = ':white_check_mark:'
-        else:
-            status_emoji = ':x:'
+        status_emoji = ":white_check_mark:" if status == "active_online" else ":x:"
 
         slashed = data["slashed"]
-        slashed_emoji = ':white_check_mark:' ? slashed : ':x:'
+        slashed_emoji = ":white_check_mark:" if slashed else ":x:"
 
         result = (
             "Validator: "
             + str(data["validatorindex"])
             + "\n"
             + "Status: "
-            + status + emoji.emojize(status_emoji)
+            + status
+            + emoji.emojize(status_emoji)
             + "\n"
             + "Slashed: "
-            + str(slashed) + emoji.emojize(slashed_emoji)
+            + str(slashed)
+            + emoji.emojize(slashed_emoji)
             + "\n\n"
             + "Total Balance: "
             + str(round(data["balance"] / (10 ** 9), 3))
