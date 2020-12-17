@@ -91,18 +91,27 @@ def stats_command(update: Update, context: CallbackContext) -> None:
         status_emoji = ":white_check_mark:" if status == "active_online" else ":x:"
 
         slashed = data["slashed"]
-        slashed_emoji = ":white_check_mark:" if slashed else ":x:"
+        slashed_emoji = ":white_check_mark:" if not slashed else ":x:"
 
+        price_emoji = (
+            ":chart_with_upwards_trend:"
+            if appreciate > 0
+            else ":chart_with_downwards_trend:"
+        )
+        fire_emoji = emojize(":fire:", use_aliases=True)
+        rocket_emoji = emojize(":rocket:", use_aliases=True)
         result = (
             "Validator: "
             + str(data["validatorindex"])
             + "\n"
             + "Status: "
             + str(status)
+            + " "
             + emojize(status_emoji, use_aliases=True)
             + "\n"
             + "Slashed: "
             + str(slashed)
+            + " "
             + emojize(slashed_emoji, use_aliases=True)
             + "\n\n"
             + "Total Balance: "
@@ -116,12 +125,14 @@ def stats_command(update: Update, context: CallbackContext) -> None:
             + "Price Change since Entry: "
             + str(round(appreciate * 100, 2))
             + "%"
+            + emojize(price_emoji, use_aliases=True)
             + "\n\n"
             + "Current Return: "
             + str(round(cr * 100, 2))
             + "%"
             + "\n"
-            + "Effective Current Return: "
+            + fire_emoji
+            + " Effective Current Return: "
             + str(round((effective_cr - 1) * 100, 2))
             + "%"
             + "\n\n"
@@ -129,7 +140,8 @@ def stats_command(update: Update, context: CallbackContext) -> None:
             + str(round(apr * 100, 2))
             + "%"
             + "\n"
-            + "Effective Annualized Return: "
+            + rocket_emoji
+            + " Effective Annualized Return: "
             + str(round((effective_apr - 1) * 100, 2))
             + "%"
         )
