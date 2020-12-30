@@ -1,6 +1,7 @@
 import requests
 import os
 from datetime import date
+from emojize import emojize
 
 import logging
 
