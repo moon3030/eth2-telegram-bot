@@ -20,7 +20,6 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 TOKEN = os.environ.get("TOKEN")
-CMC = os.environ.get("COINMARKETCAP")
 PORT = int(os.environ.get("PORT", "8443"))
 START_DATE = date(2020, 12, 13)
 ENTRY_PRICE = 550
@@ -39,99 +38,99 @@ def help_command(update: Update, context: CallbackContext) -> None:
     update.message.reply_text("Help!")
 
 
-def stats_command(update: Update, context: CallbackContext) -> None:
-    """Send a message when the command /stats is issued."""
-    # to get eth price from coinmarketcap
-    headers = headers = {
-        "Accepts": "application/json",
-        "X-CMC_PRO_API_KEY": CMC,
-    }
-    r = requests.get(
-        "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest",
-        headers=headers,
-        params={"symbol": "ETH", "convert": "USD"},
-    )
+# def stats_command(update: Update, context: CallbackContext) -> None:
+#     """Send a message when the command /stats is issued."""
+#     # to get eth price from coinmarketcap
+#     headers = headers = {
+#         "Accepts": "application/json",
+#         "X-CMC_PRO_API_KEY": CMC,
+#     }
+#     r = requests.get(
+#         "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest",
+#         headers=headers,
+#         params={"symbol": "ETH", "convert": "USD"},
+#     )
 
-    if r.status_code == 200:
-        data = r.json()["data"]
-        eth_price = data["ETH"]["quote"]["USD"]["price"]
-    else:
-        result = "Error"
-    r = requests.get("https://beaconcha.in/api/v1/validator/30670")
+#     if r.status_code == 200:
+#         data = r.json()["data"]
+#         eth_price = data["ETH"]["quote"]["USD"]["price"]
+#     else:
+#         result = "Error"
+#     r = requests.get("https://beaconcha.in/api/v1/validator/30670")
 
-    if r.status_code == 200:
-        data = r.json()["data"]
-        timedelta = date.today() - START_DATE
-        days = timedelta.days
-        appreciate = (eth_price - ENTRY_PRICE) / ENTRY_PRICE
-        gains = (data["balance"] - data["effectivebalance"]) / (10 ** 9)
-        cr = gains / 32
-        effective_cr = (1 + cr) * (1 + appreciate)
-        apr = gains / days * 365 / 32
-        effective_apr = (1 + apr) * (1 + appreciate)
+#     if r.status_code == 200:
+#         data = r.json()["data"]
+#         timedelta = date.today() - START_DATE
+#         days = timedelta.days
+#         appreciate = (eth_price - ENTRY_PRICE) / ENTRY_PRICE
+#         gains = (data["balance"] - data["effectivebalance"]) / (10 ** 9)
+#         cr = gains / 32
+#         effective_cr = (1 + cr) * (1 + appreciate)
+#         apr = gains / days * 365 / 32
+#         effective_apr = (1 + apr) * (1 + appreciate)
 
-        status = data["status"]
-        status_emoji = ":white_check_mark:" if status == "active_online" else ":x:"
+#         status = data["status"]
+#         status_emoji = ":white_check_mark:" if status == "active_online" else ":x:"
 
-        slashed = data["slashed"]
-        slashed_emoji = ":white_check_mark:" if not slashed else ":x:"
+#         slashed = data["slashed"]
+#         slashed_emoji = ":white_check_mark:" if not slashed else ":x:"
 
-        price_emoji = (
-            ":chart_with_upwards_trend:"
-            if appreciate > 0
-            else ":chart_with_downwards_trend:"
-        )
-        fire_emoji = emojize(":fire:", use_aliases=True)
-        rocket_emoji = emojize(":rocket:", use_aliases=True)
-        result = (
-            "Validator: "
-            + str(data["validatorindex"])
-            + "\n"
-            + "Status: "
-            + str(status)
-            + " "
-            + emojize(status_emoji, use_aliases=True)
-            + "\n"
-            + "Slashed: "
-            + str(slashed)
-            + " "
-            + emojize(slashed_emoji, use_aliases=True)
-            + "\n\n"
-            + "Total Balance: "
-            + str(round(data["balance"] / (10 ** 9), 3))
-            + "ETH"
-            + "\n"
-            + "Amount Earned: "
-            + str(round(gains, 3))
-            + "ETH"
-            + "\n"
-            + "Price Change since Entry: "
-            + str(round(appreciate * 100, 2))
-            + "%"
-            + emojize(price_emoji, use_aliases=True)
-            + "\n\n"
-            + "Current Return: "
-            + str(round(cr * 100, 2))
-            + "%"
-            + "\n"
-            + fire_emoji
-            + " Effective Current Return: "
-            + str(round((effective_cr - 1) * 100, 2))
-            + "%"
-            + "\n\n"
-            + "Annualized Return: "
-            + str(round(apr * 100, 2))
-            + "%"
-            + "\n"
-            + rocket_emoji
-            + " Effective Annualized Return: "
-            + str(round((effective_apr - 1) * 100, 2))
-            + "%"
-        )
+#         price_emoji = (
+#             ":chart_with_upwards_trend:"
+#             if appreciate > 0
+#             else ":chart_with_downwards_trend:"
+#         )
+#         fire_emoji = emojize(":fire:", use_aliases=True)
+#         rocket_emoji = emojize(":rocket:", use_aliases=True)
+#         result = (
+#             "Validator: "
+#             + str(data["validatorindex"])
+#             + "\n"
+#             + "Status: "
+#             + str(status)
+#             + " "
+#             + emojize(status_emoji, use_aliases=True)
+#             + "\n"
+#             + "Slashed: "
+#             + str(slashed)
+#             + " "
+#             + emojize(slashed_emoji, use_aliases=True)
+#             + "\n\n"
+#             + "Total Balance: "
+#             + str(round(data["balance"] / (10 ** 9), 3))
+#             + "ETH"
+#             + "\n"
+#             + "Amount Earned: "
+#             + str(round(gains, 3))
+#             + "ETH"
+#             + "\n"
+#             + "Price Change since Entry: "
+#             + str(round(appreciate * 100, 2))
+#             + "%"
+#             + emojize(price_emoji, use_aliases=True)
+#             + "\n\n"
+#             + "Current Return: "
+#             + str(round(cr * 100, 2))
+#             + "%"
+#             + "\n"
+#             + fire_emoji
+#             + " Effective Current Return: "
+#             + str(round((effective_cr - 1) * 100, 2))
+#             + "%"
+#             + "\n\n"
+#             + "Annualized Return: "
+#             + str(round(apr * 100, 2))
+#             + "%"
+#             + "\n"
+#             + rocket_emoji
+#             + " Effective Annualized Return: "
+#             + str(round((effective_apr - 1) * 100, 2))
+#             + "%"
+#         )
 
-    else:
-        result = "Error"
-    update.message.reply_text(result)
+#     else:
+#         result = "Error"
+#     update.message.reply_text(result)
 
 
 def echo(update: Update, context: CallbackContext) -> None:
@@ -157,7 +156,6 @@ def main():
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
-    dispatcher.add_handler(CommandHandler("stats", stats_command))
 
     # on noncommand i.e message - echo the message on Telegram
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
